@@ -37,7 +37,7 @@ export async function POST(request : Request) {
 
             return Response.json({
                 success : false,
-                message : "Failed to updated user status to accept messages."
+                message : "Failed to update user status to accept messages."
             }, {status : 401})
             
         }   
@@ -51,11 +51,11 @@ export async function POST(request : Request) {
         
     } catch (error) {
 
-        console.log("Failed to updated user status to accept messages.");
+        console.log("Failed to update user status to accept messages.");
 
         return Response.json({
             success : false,
-            message : "Failed to updated user status to accept messages."
+            message : "Failed to update user status to accept messages."
         }, {status : 500})
 
     }
