@@ -3,8 +3,7 @@ import { z } from "zod";
 
 export const signinSchema = z.object({
 
-    // could use any name for this
-    identifier : z.string(),
+    identifier : z.string(),    // could use any name for this identifier
     password : z.string(),
     
 })
