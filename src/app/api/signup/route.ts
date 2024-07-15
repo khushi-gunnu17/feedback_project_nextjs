@@ -3,18 +3,19 @@ import UserModel from "@/models/user.models";
 import bcryptjs from "bcryptjs"
 import { sendVerificationEmail } from "@/helpers/sendVerificationEmail";
 
+// could also use ApiResposne in this for more type safety   
 export async function POST(request : Request) {
 
     await dbConnect()
 
     try {
 
-        const {username, email, password} = await request.json()
+        const {username, email, password} = await request.json()    // async-await is always necessary when dealing with the database.
 
         // if user already exist and is verified
         const existingUserVerifiedByUsername = await UserModel.findOne({
             username,
-            isVerified : true
+            isVerified : true       // both these conditions will be treated as "and"
         })
 
         if (existingUserVerifiedByUsername) {
@@ -41,10 +42,11 @@ export async function POST(request : Request) {
 
             } else {
 
+                // Here, new password is being set now and a new verifyCode is being set to the user.
                 const hashedPassword = await bcryptjs.hash(password, 10)
                 existingUserByEmail.password = hashedPassword
                 existingUserByEmail.verifyCode = verifyCode
-                existingUserByEmail.verifyCodeExpiry = new Date(Date.now() + 3600000)
+                existingUserByEmail.verifyCodeExpiry = new Date(Date.now() + 3600000)   // 1 hour from expiry
                 await existingUserByEmail.save()
 
             }
