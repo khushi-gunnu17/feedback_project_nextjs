@@ -23,11 +23,12 @@ export default function SignupForm () {
 	const [isCheckingUsername, setIsCheckingUsername] = useState(false)
 	const [isSubmitting, setIsSubmitting] = useState(false)
 
-	const debouncedUsername = useDebounceCallback(setUsername, 300)
+	const debounced = useDebounceCallback(setUsername, 300)
 	const {toast} = useToast()
 	const router = useRouter()
 
 	// zod implementation
+	// form name in many places is given register and not form.
 	const form = useForm<z.infer<typeof signupSchema>>({
 		resolver : zodResolver(signupSchema),
 		defaultValues : {
@@ -41,13 +42,15 @@ export default function SignupForm () {
 	useEffect(() => {
 
 		const checkUsernameUnique = async() => {
-			if (debouncedUsername) {
+
+			if (username) {
+				
 				setIsCheckingUsername(true)
 				setUsernameMsg('')
 
 				try {
 
-					const response = await axios.get<ApiResponse>(`/api/check-username-unique?username=${debouncedUsername}`)
+					const response = await axios.get<ApiResponse>(`/api/check-username-unique?username=${username}`)
 					let message = response.data.message
 					setUsernameMsg(message)
 					
@@ -67,10 +70,12 @@ export default function SignupForm () {
 
 		checkUsernameUnique()
 
-	}, [debouncedUsername])
+	}, [username])
 
 
 
+
+	// submitting logic
 	const onSubmit = async(data: z.infer<typeof signupSchema>) => {
 
 		setIsSubmitting(true)
@@ -124,73 +129,88 @@ export default function SignupForm () {
 				<Form {...form}>
 
 					<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6" >
-						<FormField
-						name="username"
-						control={form.control}
-						render={({ field }) => (
-							<FormItem>
-								<FormLabel>Username</FormLabel>
-								
-                                <Input 
-                                placeholder="username" 
-                                {...field} 
-                                onChange={(e) => {
-                                    field.onChange(e)
-                                    setUsername(e.target.value)
-                                }}
-                                />
-
-                                {isCheckingUsername && <Loader2 className="animate-spin" />}
-                                {!isCheckingUsername && usernameMsg && (
-                                    <p
-										className={`text-sm ${
-											usernameMsg === 'Username is unique'
-											? 'text-green-500'
-											: 'text-red-500'
-										}`}
-									>
-										{usernameMsg}
-                                    </p>
-                                )}
-
-								<FormMessage />
-							</FormItem>
-						)}
-						/>
 
 						<FormField
-						name="email"
-						control={form.control}
-						render={({ field }) => (
-							<FormItem>
-								<FormLabel>Email</FormLabel>
-								<Input placeholder="email" {...field} name='email' />
-								<p className='text-muted text-gray-400 text-sm'>We will send you a verification code</p>
-								<FormMessage />
-							</FormItem>
-						)}
+
+							name="username"
+							control={form.control}
+
+							render={({ field }) => (
+
+								<FormItem>
+									<FormLabel>Username</FormLabel>
+									
+									<FormControl>
+										<Input 
+											placeholder="username" 
+											{...field} 
+											onChange={(event) => {
+												field.onChange(event)
+												debounced(event.target.value)
+											}}
+										/>
+									</FormControl>
+
+									{isCheckingUsername && <Loader2 className="animate-spin" />}
+
+									{!isCheckingUsername && usernameMsg && (
+										<p
+											className={`text-sm ${
+												usernameMsg === 'Username is available.'
+												? 'text-green-500'
+												: 'text-red-500'
+											}`}
+										>
+											{usernameMsg}
+										</p>
+									)}
+
+									<FormMessage />
+								</FormItem>
+							)}
 						/>
+
 
 						<FormField
-						name="password"
-						control={form.control}
-						render={({ field }) => (
-							<FormItem>
-								<FormLabel>Password</FormLabel>
-								<Input type="password" {...field} name="password" />
-								<FormMessage />
-							</FormItem>
-						)}
+
+							name="email"
+							control={form.control}
+
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>Email</FormLabel>
+									<Input placeholder = "email" {...field} name='email' />
+									<p className='text-muted text-gray-400 text-sm'>We will send you a verification code.</p>
+									<FormMessage />
+								</FormItem>
+							)}
+
 						/>
 
-						<Button type="submit" disabled={isSubmitting}>
+
+						<FormField
+
+							name="password"
+							control={form.control}
+
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>Password</FormLabel>
+									<Input type = "password" {...field} name="password" />
+									<FormMessage />
+								</FormItem>
+							)}
+
+						/>
+
+						<Button type="submit" className="w-full" disabled={isSubmitting}>
 							{
 								isSubmitting ? (
 									<>
 										<Loader2 className="mr-2 h-4 w-4 animate-spin" /> 
 										Please wait
 									</>
-								) : 'Signup'
+								) : ('Sign Up')
 							}
 						</Button>
 
