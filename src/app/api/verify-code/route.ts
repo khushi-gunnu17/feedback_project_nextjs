@@ -17,14 +17,17 @@ export async function POST(request : Request) {
             return Response.json({
                 success : false,
                 message : "User not found."
-            }, {status : 400})
+            }, {status : 404})
         }
 
+        // checking if the code is correct and not expired.
         const isCodeValid = user.verifyCode === code
         const isCodeNotExpired = new Date(user.verifyCodeExpiry) > new Date()
         
+
         if (isCodeValid && isCodeNotExpired) {
 
+            // updating the user's verification status.
             user.isVerified = true
             await user.save()
 
@@ -41,7 +44,7 @@ export async function POST(request : Request) {
             }, {status : 400})
 
         } else {
-
+            // Your code is incorrect
             return Response.json({
                 success : false,
                 message : "Incorrect Verification Code."
@@ -50,7 +53,7 @@ export async function POST(request : Request) {
         }
         
     } catch (error) {
-        console.error("Error verifying user", error);
+        console.error("Error verifying user : ", error);
         return Response.json({
             success : false,
             message : "Error verifying user"

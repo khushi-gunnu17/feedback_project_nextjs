@@ -1,6 +1,7 @@
 import 'next-auth'
 import { DefaultSession } from 'next-auth'
 
+// Here, we are changing the existing data type of next-auth such as user to our data types, i.e. user as we like.
 declare module 'next-auth' {
 
     interface User {
@@ -16,7 +17,7 @@ declare module 'next-auth' {
             isVerified? : boolean,
             isAcceptingMessage? : boolean,
             username? : string
-        } & DefaultSession['user']
+        } & DefaultSession['user']      // why is this done ?
     }
 }
 
