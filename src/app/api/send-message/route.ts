@@ -20,7 +20,7 @@ export async function POST(request : Request) {
             }, {status : 404})
         }
 
-        // is user accepting the messages
+        // is user accepting the messages ?
         if (!user.isAcceptingMessage) {
             return Response.json({
                 success : false,
@@ -28,6 +28,7 @@ export async function POST(request : Request) {
             }, {status : 403})
         }
 
+        // creating a new message ad pushing it into the messages array and saving the user.
         const newMessage = {content, createdAt : new Date()}
         user.messages.push(newMessage as Message)
         await user.save() 
@@ -36,6 +37,7 @@ export async function POST(request : Request) {
             success : true,
             message : "Message sent successfully!"
         }, {status : 401})
+
         
     } catch (error) {
 

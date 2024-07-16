@@ -21,7 +21,8 @@ export async function GET(request : Request) {
         }, {status : 401})
     }
 
-    const userid = new mongoose.Types .ObjectId(user._id)
+    // as we are applying aggregation pipelines here, we cannot let the user._id to be in string format. Thus, we need to convert it to mongoose id.
+    const userid = new mongoose.Types.ObjectId(user._id)
 
     try {
 
@@ -61,7 +62,7 @@ export async function GET(request : Request) {
 
         return Response.json({
             success : true,
-            messages : user[0].messages
+            messages : user[0].messages     // you always get an array as a return type from aggregation pipelines.
         }, {status : 200})
         
     } catch (error : any) {
