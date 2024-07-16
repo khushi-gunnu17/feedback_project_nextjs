@@ -203,7 +203,7 @@ export default function SignupForm () {
 
 						/>
 
-						<Button type="submit" className="w-full" disabled={isSubmitting}>
+						<Button type="submit" className="w-full bg-gray-800 hover:bg-gray-400" disabled={isSubmitting}>
 							{
 								isSubmitting ? (
 									<>
